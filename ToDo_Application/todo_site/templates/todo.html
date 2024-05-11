@@ -1,12 +1,39 @@
 {% extends 'index.html' %}
 {% block content %}
     <div class="container-fluid">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-info">
+            <strong>{{message}}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
         <h1 class="well"><i>__TODO LIST__</i></h1>
-        <div class="col-md-offset-3 col-md-5">
-            <form action="" method="POST">
-                {% csrf_token %}
-                {{forms}}
-            </form>
+        <div class="row">
+            <div class="col-md-8">
+                {% for i in list %}
+                <div class="card">
+                    <center><b>{{i.title}}</b></center>
+                    <hr>{{i.date}}
+                    <hr>{{i.details}}
+                    <br><br>
+                    <form action="/del/{{i.id}}" method="POST" style="padding-right: 4%; padding-bottom: 3%;">
+                    {% csrf_token %}
+                    <button value="remove" type="submit" class="btn btn-primary" style="float: right;"><span class="glyphicon glyphicon-trash">    remove</span></button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-3">
+                <div class="submit_form">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{forms}}
+                        <center><input type="submit" value="submit" class="btn btn-default"></center>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

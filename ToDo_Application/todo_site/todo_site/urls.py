@@ -21,5 +21,5 @@ from todo import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='todo'),
-    # path('del/<str:item_id>', views.remove, name="del"),
+    path('del/<str:item_id>', views.remove, name="del"),
 ]
