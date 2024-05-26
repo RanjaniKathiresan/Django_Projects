@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import auth, User
 from django.contrib.auth.decorators import login_required
 from .models import FollowersCount, Profile, Post, LikePost
+from itertools import chain
 
 # Create your views here.
 
@@ -12,8 +13,22 @@ def index(request):
     user_objects = User.objects.get(username = request.user.username)
     user_profile = Profile.objects.get(user = user_objects)
 
+    user_following_list = []
+    feed = []
+
+    user_following = FollowersCount.objects.filter(follower=request.user.username)
+    
+    for users in user_following:
+        user_following_list.append(users.user)
+    
+    for usernames in user_following_list:
+        feed_lists = Post.objects.filter(user=usernames)
+        feed.append(feed_lists)
+    
+    feed_list = list(chain(*feed))
+
     posts = Post.objects.all()
-    return render(request, 'index.html', {'user_profile':user_profile, 'posts':posts})
+    return render(request, 'index.html', {'user_profile':user_profile, 'posts':feed_list})
 
 @login_required(login_url='/signin')
 def settings(request):
@@ -142,11 +157,26 @@ def profile(request, pk):
     user_profile = Profile.objects.get(user=user_object)
     user_posts = Post.objects.filter(user=pk)
     user_post_length = len(user_posts)
+
+    follower = request.user.username
+    user = pk
+
+    if FollowersCount.objects.filter(follower=follower,user=user):
+        button_text = 'Unfollow'
+    else:
+        button_text = 'Follow'
+
+    user_followers = len(FollowersCount.objects.filter(user=pk))
+    user_following = len(FollowersCount.objects.filter(follower=pk))
+
     context = {
         'user_object':user_object,
         'user_profile':user_profile,
         'user_posts':user_posts,
         'user_post_length':user_post_length,
+        'button_text':button_text,
+        'user_followers':user_followers,
+        'user_following':user_following,
     }
     return render(request, 'profile.html',context)
 
