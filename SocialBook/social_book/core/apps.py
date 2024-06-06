@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-
+# import core.templatetags.custom_filters
 
 class CoreConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'

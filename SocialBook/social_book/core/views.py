@@ -13,7 +13,7 @@ import random
 def index(request):
     user_objects = User.objects.get(username = request.user.username)
     user_profile = Profile.objects.get(user = user_objects)
-
+    
     user_following_list = []
     feed = []
 
@@ -28,6 +28,16 @@ def index(request):
     
     feed_list = list(chain(*feed))
     
+    # User post profile image
+    post_profile = {}
+    for post in feed_list:
+        username = User.objects.get(username=post.user)
+        image = Profile.objects.get(user_id=username.id).profileimg.url
+        # print(f"Post user: {type(post.user)}")
+       
+        post_profile[post.user] = image
+        # print(post_profile)
+
     # user suggestion starts
     all_users = User.objects.all()
     user_following_all = []
@@ -52,8 +62,10 @@ def index(request):
         username_profile_list.append(profile_lists)
     
     suggestions_username_profile_list = list(chain(*username_profile_list))
-
-    return render(request, 'index.html', {'user_profile':user_profile, 'posts':feed_list, 'suggestions_username_profile_list':suggestions_username_profile_list})
+    context = {'user_profile':user_profile, 
+               'posts':feed_list, 
+               'post_profile':post_profile, 'suggestions_username_profile_list':suggestions_username_profile_list}
+    return render(request, 'index.html', context)
 
 @login_required(login_url='/signin')
 def settings(request):
