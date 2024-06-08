@@ -193,6 +193,13 @@ def like_post(request):
         return redirect('/')
 
 @login_required(login_url='/signin')
+def delete_post(request):
+    post_id = request.GET.get('post_id')
+    post = Post.objects.get(id=post_id)
+    post.delete()
+    return redirect('/')
+
+@login_required(login_url='/signin')
 def follow(request):
     if request.method == 'POST':
         follower = request.POST['follower']
